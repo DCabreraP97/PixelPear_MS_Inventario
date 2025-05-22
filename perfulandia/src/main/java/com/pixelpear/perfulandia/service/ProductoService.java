@@ -18,11 +18,17 @@ public class ProductoService {
     private final ProductoRepository productoRepository;
 
     public List<Producto> mostrarStock(){
-
         return productoRepository.findAll();
     }
 
     public Producto mostrarProductoPorId(Long idProducto){
         return productoRepository.findById(idProducto).orElse(null);
+    }
+
+    public Producto reponerStock(Long idProducto, int cantidadAReponer){
+        return productoRepository.findById(idProducto).map(producto ->{
+            producto.setStock(producto.getStock() + cantidadAReponer);
+            return productoRepository.save(producto);
+        }).orElse(null);
     }
 }

@@ -18,15 +18,15 @@ import lombok.NoArgsConstructor;
 public class Producto {
 
     @Id
-    @Column(name = "ID_PRODUCTO")
+    @Column(name = "id_producto")
     private Long idProducto;
 
-    @Column(name = "NOMBRE")
+    @Column(name = "nombre")
     private String nombre;
 
-    @Column(name = "PRECIO")
+    @Column(name = "precio")
     private double precio;
 
-    @Column(name = "STOCK")
+    @Column(name = "stock")
     private Integer stock;
 }
