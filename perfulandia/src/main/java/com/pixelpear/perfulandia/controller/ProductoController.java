@@ -1,11 +1,15 @@
 package com.pixelpear.perfulandia.controller;
 
 import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.pixelpear.perfulandia.model.Producto;
 import com.pixelpear.perfulandia.service.ProductoService;
+
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,9 +30,10 @@ public class ProductoController {
         return productoService.mostrarStock();
     }
 
-    
-    
-
+    @GetMapping("/producto/{idProducto}")
+    public Producto obtenerProductoPorId(@PathVariable Long idProducto) {
+        return productoService.mostrarProductoPorId(idProducto);
+    }
     
 
 }
