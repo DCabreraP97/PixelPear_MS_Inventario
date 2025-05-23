@@ -21,7 +21,7 @@ public class ProductoService {
         return productoRepository.findAll();
     }
 
-    public Producto mostrarProductoPorId(Long idProducto){
+    /*public Producto mostrarProductoPorId(Long idProducto){
         return productoRepository.findById(idProducto).orElse(null);
     }
 
@@ -29,6 +29,10 @@ public class ProductoService {
         return productoRepository.findById(idProducto).map(producto ->{
             producto.setStock(producto.getStock() + cantidadAReponer);
             return productoRepository.save(producto);
-        }).orElse(null);
+        }).orElse(null);*/
+
+    public void agregarProducto(Producto producto){
+        productoRepository.save(producto);
     }
 }
+
