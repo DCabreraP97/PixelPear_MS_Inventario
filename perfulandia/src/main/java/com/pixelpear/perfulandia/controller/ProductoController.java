@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,28 +33,36 @@ public class ProductoController {
         return "El ms esta activo";
     }
 
+    /* Obtener todo el inventario */
     @GetMapping("/stockInventario")
     public List<Producto> obtenerStock() {
         return productoService.mostrarStock();
     }
 
+    /* Obtener producto por id */
     @GetMapping("/producto/{idProducto}")
     public Producto obtenerProductoPorId(@PathVariable Long idProducto) {
         return productoService.mostrarProductoPorId(idProducto);
     }
     
+    /* Reponer stock */
     @PutMapping("/reponerProducto")
     public Producto reponerStock(@RequestParam Long idProducto, @RequestParam int cantidad) {
         
         return productoService.reponerStock(idProducto, cantidad);
     }
 
-    /*@PostMapping("/nuevoProducto")
-    public void agregaProducto(@RequestParam Long idProducto, String nombre, double precio, Integer stock) {
-        productoService.agregarProducto(new Producto(idProducto, nombre, precio, stock));
+    @PostMapping("/nuevoProducto")
+    public void agregarProducto(@RequestParam String nombre, @RequestParam double precio, @RequestParam Integer stock) {
+        Producto nuevoProducto = Producto.builder()
+        .nombre(nombre)
+        .precio(precio)
+        .stock(stock)
+        .build();
+        productoService.agregarProducto(nuevoProducto);
     }
 
-    @PostMapping("/nuevoProducto")
+    /*@PostMapping("/nuevoProducto2")
     public Producto agregarProducto(@RequestBody Producto producto) {
         return productoService.crearProducto(producto.getNombre(), producto.getPrecio(), producto.getStock());
     }*/
