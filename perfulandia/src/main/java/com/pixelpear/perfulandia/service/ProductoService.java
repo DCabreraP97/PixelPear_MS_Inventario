@@ -21,18 +21,32 @@ public class ProductoService {
         return productoRepository.findAll();
     }
 
-    /*public Producto mostrarProductoPorId(Long idProducto){
+    public Producto mostrarProductoPorId(Long idProducto){
         return productoRepository.findById(idProducto).orElse(null);
     }
 
     public Producto reponerStock(Long idProducto, int cantidadAReponer){
-        return productoRepository.findById(idProducto).map(producto ->{
+        return productoRepository.findById(idProducto)
+            .map(producto ->{
             producto.setStock(producto.getStock() + cantidadAReponer);
             return productoRepository.save(producto);
-        }).orElse(null);*/
+        }).orElse(null);
+    }
 
     public void agregarProducto(Producto producto){
         productoRepository.save(producto);
+    }
+
+    /*public Producto crearProducto(String nombre, double precio, Integer stock ){
+        Producto nuevoProducto = new Producto();
+        nuevoProducto.setNombre(nombre);
+        nuevoProducto.setPrecio(precio);
+        nuevoProducto.setStock(stock);
+        return productoRepository.save(nuevoProducto);
+    }*/
+
+    public void eliminarProducto(Long idProducto){
+        productoRepository.deleteById(idProducto);
     }
 }
 
