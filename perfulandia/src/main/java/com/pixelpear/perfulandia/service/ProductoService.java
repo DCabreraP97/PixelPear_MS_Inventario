@@ -37,14 +37,6 @@ public class ProductoService {
         productoRepository.save(producto);
     }
 
-    public Producto crearProducto(String nombre, double precio, Integer stock ){
-        Producto nuevoProducto = new Producto();
-        nuevoProducto.setNombre(nombre);
-        nuevoProducto.setPrecio(precio);
-        nuevoProducto.setStock(stock);
-        return productoRepository.save(nuevoProducto);
-    }
-
     public void eliminarProducto(Long idProducto){
         productoRepository.deleteById(idProducto);
     }

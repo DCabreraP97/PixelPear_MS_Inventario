@@ -2,6 +2,7 @@ package com.pixelpear.perfulandia.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,11 +29,6 @@ public class ProductoController {
 
     private final ProductoService productoService;
 
-    @GetMapping("/status")
-    public String mostrarStatus() {
-        return "El ms esta activo";
-    }
-
     /* Obtener todo el inventario */
     @GetMapping("/stockInventario")
     public List<Producto> obtenerStock() {
@@ -52,23 +48,22 @@ public class ProductoController {
         return productoService.reponerStock(idProducto, cantidad);
     }
 
+    /* Agregar nuevo producto */
     @PostMapping("/nuevoProducto")
-    public void agregarProducto(@RequestParam String nombre, @RequestParam double precio, @RequestParam Integer stock) {
+    public ResponseEntity<String> agregarProducto(@RequestParam String nombre, @RequestParam double precio, @RequestParam Integer stock) {
         Producto nuevoProducto = Producto.builder()
         .nombre(nombre)
         .precio(precio)
         .stock(stock)
         .build();
         productoService.agregarProducto(nuevoProducto);
+        return ResponseEntity.ok("El producto " + nuevoProducto.getNombre() + " ha sido agregado al inventario.");
     }
-
-    /*@PostMapping("/nuevoProducto2")
-    public Producto agregarProducto(@RequestBody Producto producto) {
-        return productoService.crearProducto(producto.getNombre(), producto.getPrecio(), producto.getStock());
-    }*/
     
-    @DeleteMapping("/{idProducto}/borrarProducto")
-    public void eliminarProducto(@PathVariable Long idProducto){
+    /* Eliminar producto de inventario */
+    @DeleteMapping("/borrarProducto")
+    public ResponseEntity<String> eliminarProducto(@RequestParam Long idProducto){
         productoService.eliminarProducto(idProducto);
+        return ResponseEntity.ok("El producto con id: " + idProducto + " ha sido eliminado del inventario.");
     }
 }
