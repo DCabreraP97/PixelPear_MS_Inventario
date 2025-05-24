@@ -29,7 +29,7 @@ public class ProductoController {
 
     private final ProductoService productoService;
 
-    /* Obtener todo el inventario */
+    /* Obtener todo el inventario*/
     @GetMapping("/stockInventario")
     public List<Producto> obtenerStock() {
         return productoService.mostrarStock();
