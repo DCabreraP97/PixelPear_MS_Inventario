@@ -50,14 +50,18 @@ public class ProductoController {
 
     /* Agregar nuevo producto */
     @PostMapping("/nuevoProducto")
-    public ResponseEntity<String> agregarProducto(@RequestParam String nombre, @RequestParam double precio, @RequestParam Integer stock) {
+    public ResponseEntity<String> agregarProducto(@RequestParam (required = false) String nombre, @RequestParam (required = false) Double precio, @RequestParam (required = false) Integer stock) {
         Producto nuevoProducto = Producto.builder()
         .nombre(nombre)
         .precio(precio)
         .stock(stock)
         .build();
-        productoService.agregarProducto(nuevoProducto);
-        return ResponseEntity.ok("El producto " + nuevoProducto.getNombre() + " ha sido agregado al inventario.");
+        if (nombre.trim().isEmpty() || precio == null || stock == null) {
+            return ResponseEntity.badRequest().body("El producto no fue agregado al inventario. Debe ingresar todos los datos.");
+        } else {
+            productoService.agregarProducto(nuevoProducto);
+            return ResponseEntity.ok("El producto " + nuevoProducto.getNombre() + " ha sido agregado al inventario.");
+        }
     }
     
     /* Eliminar producto de inventario */
