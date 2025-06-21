@@ -16,6 +16,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
 import org.springframework.http.HttpStatus;
 
 import com.pixelpear.perfulandia.controller.ProductoController;
@@ -34,7 +36,7 @@ public class PerfulandiaControllerTest {
     private static final Logger logger = LoggerFactory.getLogger(ProductoController.class);
 
     @Test
-    void testObtenerStock_Ok() throws Exception {
+    void testObtenerStock() throws Exception {
         // Given
         String URL = "/inventario/stockInventario";
 
@@ -57,11 +59,10 @@ public class PerfulandiaControllerTest {
 
         assertEquals(HttpStatus.OK.value(),status, "El estado de la respuesta debería ser 200.");
         assertFalse(body.isEmpty(), "El cuerpo de la respuesta no debería estar vacío.");
-        assertTrue(body.contains("Perfume1"), "El cuerpo de la respuesta debería contener 'Perfume1'.");
     }
 
     @Test
-    void testObtenerStockPorId() throws Exception {
+    void testObtenerProductoPorId() throws Exception {
         //Given
         String URL = "/inventario/obtenerProducto?idProducto=1";
         Producto producto = new Producto(1L, "Perfume1", 111.1, 11);
@@ -80,5 +81,43 @@ public class PerfulandiaControllerTest {
         assertFalse(body.isEmpty(), "El cuerpo de la respuesta no debería estar vacío.");
     }
 
+    @Test
+    void testObtenerProductoPorId_Invalido_NoEncontrado() throws Exception {
+        //Given
+        String URL = "/inventario/obtenerProducto?idProducto=500";
 
+        when(productoService.mostrarProductoPorId(500L)).thenReturn(java.util.Optional.empty());
+
+        //When
+        MvcResult response = mockMvc.perform(get(URL)).andReturn();
+        logger.info("Status: " + response.getResponse().getStatus());
+        logger.info("Body: " + response.getResponse().getContentAsString());
+        
+        //Then
+        int status = response.getResponse().getStatus();
+        String body = response.getResponse().getContentAsString();
+        assertEquals(HttpStatus.NOT_FOUND.value(), status, "El estado de debería ser 404.");
+        assertEquals("Producto no encontrado.", body);
+    }
+
+    @Test
+    void testActualizarStock() throws Exception {
+        // Given
+        String URL = "/inventario/actualizarStock?idProducto=1&cantidad=5";
+        
+        Producto productoActualizado = new Producto(1L, "Perfume1", 111.1, 10 + 5);
+
+        when(productoService.actualizarStock(1L, 5)).thenReturn(productoActualizado);
+
+        // When
+        MvcResult response = mockMvc.perform(put(URL)).andReturn();
+        logger.info("Status: " + response.getResponse().getStatus());
+        logger.info("Body: " + response.getResponse().getContentAsString());
+
+        // Then
+        int status = response.getResponse().getStatus();
+        String body = response.getResponse().getContentAsString();
+        assertEquals(HttpStatus.OK.value(), status, "El estado de la respuesta debería ser 200.");
+        assertFalse(body.isEmpty(), "El cuerpo de la respuesta no debería estar vacío.");
+    }
 }

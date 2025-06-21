@@ -31,7 +31,7 @@ public class ProductoController {
         return productoService.mostrarStock();
     }
 
-    /* Obtener producto por id LISTOOOOOOOO*/
+    /* Obtener producto por id*/
     @GetMapping("/obtenerProducto")
     public ResponseEntity<String> obtenerProductoPorId(@RequestParam (required = false) Long idProducto) {
         if (idProducto == null || idProducto <= 0) {
