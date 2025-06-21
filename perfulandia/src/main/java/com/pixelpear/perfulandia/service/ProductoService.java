@@ -1,6 +1,7 @@
 package com.pixelpear.perfulandia.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,11 +22,11 @@ public class ProductoService {
         return productoRepository.findAll();
     }
 
-    public Producto mostrarProductoPorId(Long idProducto){
-        return productoRepository.findById(idProducto).orElse(null);
+    public Optional<Producto> mostrarProductoPorId(Long idProducto){
+        return productoRepository.findById(idProducto);
     }
 
-    public Producto reponerStock(Long idProducto, int cantidadAReponer){
+    public Producto actualizarStock(Long idProducto, int cantidadAReponer){
         return productoRepository.findById(idProducto)
             .map(producto ->{
             producto.setStock(producto.getStock() + cantidadAReponer);
