@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -19,6 +20,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import org.springframework.http.HttpStatus;
 
@@ -38,80 +42,76 @@ public class ControllerTest {
     private static final Logger logger = LoggerFactory.getLogger(ProductoController.class);
 
     @Test
-    void testObtenerStock_Arrooja200() throws Exception {
+    void testObtenerStock_DeberiaRetornar200YLista() throws Exception {
+
         // Given
-        String URL = "/inventario/stockInventario";
+        List<Producto> productos = List.of(
+            new Producto(1L, "Perfume1", 111.1, 11),
+            new Producto(2L, "Perfume2", 222.2, 22)
+        );
 
-        Producto producto1 = new Producto(1L, "Perfume1", 111.1, 11);
-        Producto producto2 = new Producto(2L, "Perfume2", 222.2, 22);
-        
-        List<Producto> productos = List.of(producto1, producto2);
-
+        //When
         when(productoService.mostrarStock()).thenReturn(productos);
 
-        //When
-        MvcResult response = mockMvc.perform(get(URL)).andReturn();
-
-        logger.info("Status: " + response.getResponse().getStatus());
-        logger.info("Body: " + response.getResponse().getContentAsString());
-
-        //Then
-        int status = response.getResponse().getStatus();
-        String body = response.getResponse().getContentAsString();
-
-        assertEquals(HttpStatus.OK.value(),status, "El estado de la respuesta debería ser 200.");
-        assertFalse(body.isEmpty(), "El cuerpo de la respuesta no debería estar vacío.");
+        // Then
+        mockMvc.perform(get("/inventario/stockInventario"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$[0].idProducto").value(1L))
+            .andExpect(jsonPath("$[0].nombre").value("Perfume1"))
+            .andExpect(jsonPath("$[0].precio").value(111.1))
+            .andExpect(jsonPath("$[0].stock").value(11))
+            .andExpect(jsonPath("$[1].idProducto").value(2L))
+            .andExpect(jsonPath("$[1].nombre").value("Perfume2"))
+            .andExpect(jsonPath("$[1].precio").value(222.2))
+            .andExpect(jsonPath("$[1].stock").value(22));
     }
 
     @Test
-    void testObtenerProductoPorId_Arroja200() throws Exception {
+    void testObtenerProductoPorId_DeberiaRetornar200YProducto() throws Exception {
+
         //Given
-        String URL = "/inventario/obtenerProducto?idProducto=1";
-        Producto producto = new Producto(1L, "Perfume1", 111.1, 11);
-
-        when(productoService.mostrarProductoPorId(1L)).thenReturn(java.util.Optional.of(producto));
+        List<Producto> productos = List.of(
+            new Producto(1L, "Perfume1", 111.1, 11),
+            new Producto(2L, "Perfume2", 222.2, 22)
+        );
 
         //When
-        MvcResult response = mockMvc.perform(get(URL)).andReturn();
-        logger.info("Status: " + response.getResponse().getStatus());
-        logger.info("Body: " + response.getResponse().getContentAsString());
-        
+        when(productoService.mostrarProductoPorId(1L)).thenReturn(Optional.of(productos.get(0)));
+
         //Then
-        int status = response.getResponse().getStatus();
-        String body = response.getResponse().getContentAsString();
-        assertEquals(HttpStatus.OK.value(), status, "El estado de la respuesta debería ser 200.");
-        assertFalse(body.isEmpty(), "El cuerpo de la respuesta no debería estar vacío.");
+        mockMvc.perform(get("/inventario/obtenerProducto?idProducto=1"))
+        .andExpect(status().isOk())
+            .andExpect(jsonPath("$.idProducto").value(1L))
+            .andExpect(jsonPath("$.nombre").value("Perfume1"))
+            .andExpect(jsonPath("$.precio").value(111.1))
+            .andExpect(jsonPath("$.stock").value(11))
+            ;
     }
 
     @Test
-    void testObtenerProductoPorId_Invalido_NoEncontrado_Arroja404() throws Exception {
+    void testObtenerProductoPorId_ArrojaNoEncontradoY404() throws Exception {
+        
         //Given
-        String URL = "/inventario/obtenerProducto?idProducto=500";
-
-        when(productoService.mostrarProductoPorId(500L)).thenReturn(java.util.Optional.empty());
-
-        //When
-        MvcResult response = mockMvc.perform(get(URL)).andReturn();
-        logger.info("Status: " + response.getResponse().getStatus());
-        logger.info("Body: " + response.getResponse().getContentAsString());
+        Long idProductoNoEncontrado = 500L;
         
-        //Then
-        int status = response.getResponse().getStatus();
-        String body = response.getResponse().getContentAsString();
-        assertEquals(HttpStatus.NOT_FOUND.value(), status, "El estado de debería ser 404.");
-        assertEquals("Producto no encontrado.", body);
+        //When
+        when(productoService.mostrarProductoPorId(idProductoNoEncontrado)).thenReturn(Optional.empty());
+
+       //Then
+        mockMvc.perform(get("/inventario/obtenerProducto?idProducto=500"))
+        .andExpect(status().isNotFound());
     }
 
     @Test
-    void testActualizarStock_Arroja200Arroja200() throws Exception {
+    void testActualizarStock_DeberiaRetornar200YStockActualizado() throws Exception {
         // Given
         String URL = "/inventario/actualizarStock?idProducto=1&cantidad=5";
         
         Producto productoActualizado = new Producto(1L, "Perfume1", 111.1, 10 + 5);
 
-        when(productoService.actualizarStock(1L, 5)).thenReturn(productoActualizado);
-
         // When
+        when(productoService.actualizarStock(1L, 5)).thenReturn(productoActualizado);
         MvcResult response = mockMvc.perform(put(URL)).andReturn();
         logger.info("Status: " + response.getResponse().getStatus());
         logger.info("Body: " + response.getResponse().getContentAsString());
