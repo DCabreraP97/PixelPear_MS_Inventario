@@ -38,8 +38,10 @@ public class ProductoService {
         return productoRepository.save(producto);
     }
 
-    public void eliminarProducto(Long idProducto){
-        productoRepository.deleteById(idProducto);
+    public Producto eliminarProducto(Long idProducto){
+        Optional<Producto> OptProducto = productoRepository.findById(idProducto);
+        OptProducto.ifPresent(producto -> productoRepository.deleteById(idProducto));
+        return OptProducto.orElse(null);
     }
 }
 

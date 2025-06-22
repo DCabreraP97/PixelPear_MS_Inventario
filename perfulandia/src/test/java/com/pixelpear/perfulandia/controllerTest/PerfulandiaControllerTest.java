@@ -234,7 +234,9 @@ public class PerfulandiaControllerTest {
     void testEliminarProducto_Arroja200() throws Exception {
         // Given
         String URL = "/inventario/borrarProducto?idProducto=1";
-
+        Producto producto = new Producto(1L, "Perfume1", 111.1, 11);
+        when(productoService.eliminarProducto(1L)).thenReturn(producto);
+        
         // When
         MvcResult response = mockMvc.perform(delete(URL)).andReturn();
         logger.info("Status: " + response.getResponse().getStatus());
