@@ -31,7 +31,7 @@ import com.pixelpear.perfulandia.model.Producto;
 import com.pixelpear.perfulandia.service.ProductoService;
 
 @WebMvcTest(ProductoController.class)
-public class ControllerTest {
+public class ProductoControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

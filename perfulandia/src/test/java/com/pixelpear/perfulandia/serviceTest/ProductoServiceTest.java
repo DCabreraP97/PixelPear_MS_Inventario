@@ -20,7 +20,7 @@ import com.pixelpear.perfulandia.service.ProductoService;
 
 
 @ExtendWith(MockitoExtension.class)
-class ServiceTest {
+class ProductoServiceTest {
 
 	@InjectMocks
 	private ProductoService productoService;
