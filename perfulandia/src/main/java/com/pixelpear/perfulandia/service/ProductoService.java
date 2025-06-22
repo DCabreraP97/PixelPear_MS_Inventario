@@ -34,8 +34,8 @@ public class ProductoService {
         }).orElse(null);
     }
 
-    public void agregarProducto(Producto producto){
-        productoRepository.save(producto);
+    public Producto agregarProducto(Producto producto){
+        return productoRepository.save(producto);
     }
 
     public void eliminarProducto(Long idProducto){

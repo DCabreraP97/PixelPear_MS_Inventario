@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.util.List;
 
@@ -12,10 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import org.springframework.http.HttpStatus;
@@ -30,7 +32,7 @@ public class PerfulandiaControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean
+    @MockBean
     private ProductoService productoService;
 
     private static final Logger logger = LoggerFactory.getLogger(ProductoController.class);
@@ -120,4 +122,78 @@ public class PerfulandiaControllerTest {
         assertEquals(HttpStatus.OK.value(), status, "El estado de la respuesta debería ser 200.");
         assertFalse(body.isEmpty(), "El cuerpo de la respuesta no debería estar vacío.");
     }
+
+    @Test
+    void testActualizarStock_IdCero() throws Exception {
+        // Given
+        String URL = "/inventario/actualizarStock?idProducto=0&cantidad=5";
+
+        // When
+        MvcResult response = mockMvc.perform(put(URL)).andReturn();
+        logger.info("Status: " + response.getResponse().getStatus());
+        logger.info("Body: " + response.getResponse().getContentAsString());
+
+        // Then
+        int status = response.getResponse().getStatus();
+        String body = response.getResponse().getContentAsString();
+        assertEquals(HttpStatus.BAD_REQUEST.value(), status, "El estado de la respuesta debería ser 400.");
+        assertEquals("No se ha actualizado el stock del producto, debe ingresar la Id y debe ser mayor a 0.", body);
+    }
+
+    @Test
+    void testActualizarStock_CantidadCero() throws Exception {
+        // Given
+        String URL = "/inventario/actualizarStock?idProducto=1&cantidad=0";
+
+        // When
+        MvcResult response = mockMvc.perform(put(URL)).andReturn();
+        logger.info("Status: " + response.getResponse().getStatus());
+        logger.info("Body: " + response.getResponse().getContentAsString());
+
+        // Then
+        int status = response.getResponse().getStatus();
+        String body = response.getResponse().getContentAsString();
+        assertEquals(HttpStatus.BAD_REQUEST.value(), status, "El estado de la respuesta debería ser 400.");
+        assertEquals("No se ha actualizado el stock del producto, debe ingresar una cantidad mayor a 0.", body);
+    }
+
+    @Test
+    void testAgregarProducto() throws Exception {
+        // Given
+        String URL = "/inventario/nuevoProducto?nombre=Perfume1&precio=111.1&stock=11";
+
+        Producto nuevoProducto = new Producto(null, "Perfume1", 111.1, 11);
+
+        when(productoService.agregarProducto(any(Producto.class))).thenReturn(nuevoProducto);
+
+        // When
+        MvcResult response = mockMvc.perform(post(URL)).andReturn();
+        logger.info("Status: " + response.getResponse().getStatus());
+        logger.info("Body: " + response.getResponse().getContentAsString());
+
+        // Then
+        int status = response.getResponse().getStatus();
+        String body = response.getResponse().getContentAsString();
+        assertEquals(HttpStatus.OK.value(), status, "El estado de la respuesta debería ser 200.");
+        assertFalse(body.isEmpty(), "El cuerpo de la respuesta no debería estar vacío.");
+    }
+
+    @Test
+    void testAgregarProducto_NombreVacio() throws Exception {
+        // Given
+        String URL = "/inventario/nuevoProducto?nombre=&precio=333.3&stock=33";
+
+        // When
+        MvcResult response = mockMvc.perform(post(URL)).andReturn();
+        logger.info("Status: " + response.getResponse().getStatus());
+        logger.info("Body: " + response.getResponse().getContentAsString());
+
+        // Then
+        int status = response.getResponse().getStatus();
+        String body = response.getResponse().getContentAsString();
+        assertEquals(HttpStatus.BAD_REQUEST.value(), status, "El estado debería ser 400.");
+        assertEquals("El producto no fue agregado al inventario. Debe ingresar todos los datos.", body);
+    }
+
+
 }
