@@ -2,7 +2,6 @@ package com.pixelpear.perfulandia.controllerTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -28,7 +27,7 @@ import com.pixelpear.perfulandia.model.Producto;
 import com.pixelpear.perfulandia.service.ProductoService;
 
 @WebMvcTest(ProductoController.class)
-public class PerfulandiaControllerTest {
+public class ControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
