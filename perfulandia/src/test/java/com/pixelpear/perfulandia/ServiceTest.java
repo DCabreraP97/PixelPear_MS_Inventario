@@ -4,6 +4,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -86,9 +87,25 @@ class ServiceTest {
 		logger.info("Producto encontrado: {}", resultado.orElse(null));
 		assert resultado.isPresent();
 		assert resultado.get().getIdProducto().equals(idProducto);
-		verify(productoRepository).findById(idProducto);
-	
-	
+		verify(productoRepository).findById(idProducto);	
 	}
+
+	@Test
+	void testMostrarProductoPorId_IdNoEncontrado_DeberiaRetornarVacio() {
+
+		// Given
+		Long idProducto = 1L;	
+		when(productoRepository.findById(idProducto)).thenReturn(Optional.empty());
+
+		// When
+		Optional<Producto> resultado = productoService.mostrarProductoPorId(idProducto);
+
+		// Then
+		logger.info("Producto encontrado: {}", resultado.orElse(null));
+		assert resultado.isEmpty();
+		verify(productoRepository).findById(idProducto);	
+	}
+
+
 
 }
