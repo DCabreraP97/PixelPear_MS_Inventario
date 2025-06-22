@@ -106,6 +106,90 @@ class ServiceTest {
 		verify(productoRepository).findById(idProducto);	
 	}
 
+	@Test
+	void testActualizarStock_DeberiaActualizarStockDelProducto() {
+		// Given
+		Long idProducto = 1L;
+		int cantidadAReponer = 5;
+		Producto producto = new Producto(idProducto, "Perfume1", 100.0, 10);
+		when(productoRepository.findById(idProducto)).thenReturn(Optional.of(producto));
+		when(productoRepository.save(producto)).thenReturn(producto);
 
+		// When
+		Producto resultado = productoService.actualizarStock(idProducto, cantidadAReponer);
+
+		// Then
+		logger.info("Producto actualizado: {}", resultado);
+		assert resultado.getStock() == 15; // 10 + 5
+		verify(productoRepository).findById(idProducto);
+		verify(productoRepository).save(producto);
+	}
+
+	@Test
+	void testActualizarStock_IdNoEncontrado_DeberiaRetornarNull() {
+		// Given
+		Long idProducto = 1L;
+		int cantidadAReponer = 5;
+		when(productoRepository.findById(idProducto)).thenReturn(Optional.empty());
+
+		// When
+		Producto resultado = productoService.actualizarStock(idProducto, cantidadAReponer);
+
+		// Then
+		logger.info("Producto no encontrado: {}", resultado);
+		assert resultado == null;
+		verify(productoRepository).findById(idProducto);
+	}
+
+	@Test
+	void testAgregarProducto_DeberiaAgregarNuevoProducto() {
+
+		// Given
+		Producto nuevoProducto = new Producto(1L, "Perfume Nuevo", 150.0, 5);
+		when(productoRepository.save(nuevoProducto)).thenReturn(nuevoProducto);
+
+		// When
+		Producto resultado = productoService.agregarProducto(nuevoProducto);
+
+		// Then
+		logger.info("Producto agregado: {}", resultado);
+		assert resultado.getNombre().equals("Perfume Nuevo");
+		assert resultado.getPrecio() == 150.0;
+		assert resultado.getStock() == 5;
+		verify(productoRepository).save(nuevoProducto);
+	}
+
+	@Test
+	void testEliminarProducto_DeberiaEliminarProductoPorId() {
+
+		// Given
+		Long idProducto = 1L;
+		Producto producto = new Producto(idProducto, "Perfume1", 100.0, 10);
+		when(productoRepository.findById(idProducto)).thenReturn(Optional.of(producto));
+
+		// When
+		Producto resultado = productoService.eliminarProducto(idProducto);
+
+		// Then
+		logger.info("Producto eliminado: {}", resultado);
+		assert resultado.getIdProducto().equals(idProducto);
+		verify(productoRepository).findById(idProducto);
+		verify(productoRepository).deleteById(idProducto);
+	}
+
+	@Test
+	void testEliminarProducto_IdNoEncontrado_DeberiaRetornarNull() {
+		// Given
+		Long idProducto = 1L;
+		when(productoRepository.findById(idProducto)).thenReturn(Optional.empty());
+
+		// When
+		Producto resultado = productoService.eliminarProducto(idProducto);
+
+		// Then
+		logger.info("Producto no encontrado para eliminar: {}", resultado);
+		assert resultado == null;
+		verify(productoRepository).findById(idProducto);
+	}
 
 }
