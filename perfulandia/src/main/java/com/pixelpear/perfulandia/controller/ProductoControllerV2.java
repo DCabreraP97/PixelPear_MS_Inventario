@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Producto", description = "Controlador para gestionar productos en el inventario de Perfulandia")
 @RestController
-@RequestMapping("/inventario")
+@RequestMapping("/v2/inventario")
 @RequiredArgsConstructor
 
 public class ProductoControllerV2 {
@@ -37,7 +37,7 @@ public class ProductoControllerV2 {
     private final ProductoService productoService;
 
     /* Obtener todo el inventario*/
-    @GetMapping("/v2/stockInventario")
+    @GetMapping("/stockInventario")
     @Operation(summary = "Obtener todo el inventario", description = "Devuelve una lista de todos los productos en el inventario.")
 
     public List<Producto> obtenerStock() {
@@ -46,7 +46,7 @@ public class ProductoControllerV2 {
 
 
     /* Obtener producto por id*/   
-    @GetMapping("/v2/obtenerProducto")
+    @GetMapping("/obtenerProducto")
     @Operation(summary = "Obtener producto por ID", description = "Devuelve un producto específico del inventario según su ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Producto encontrado"),
@@ -64,7 +64,7 @@ public class ProductoControllerV2 {
 
 
     /* Actualizar stock LISTOOOO*/
-    @PutMapping("/v2/actualizarStock")
+    @PutMapping("/actualizarStock")
     @Operation(summary = "Actualizar stock de un producto", description = "Actualiza la cantidad de stock de un producto específico en el inventario.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Stock actualizado correctamente"),
@@ -83,7 +83,7 @@ public class ProductoControllerV2 {
     
 
     /* Agregar nuevo producto LISTOOOOOOOO*/
-    @PostMapping("/v2/nuevoProducto")
+    @PostMapping("/nuevoProducto")
     @Operation(summary = "Agregar nuevo producto", description = "Agrega un nuevo producto al inventario de Perfulandia.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Producto agregado correctamente"),
@@ -93,7 +93,7 @@ public class ProductoControllerV2 {
     public ResponseEntity<?> agregarProducto(@RequestParam(required = false) String nombre, @RequestParam(required = false) Double precio,
         @RequestParam(required = false) Integer stock) {
 
-        if (nombre == null || precio == null || stock == null) {
+        if (nombre == null || nombre.trim().isEmpty() || precio == null || stock == null) {
             return ResponseEntity.badRequest().body("El producto no fue agregado al inventario. Debe ingresar todos los datos.");
         } else if (precio <= 0 || stock <= 0) {
             return ResponseEntity.badRequest().body("El producto no fue agregado al inventario. El precio y el stock deben ser mayor a 0.");
@@ -111,7 +111,7 @@ public class ProductoControllerV2 {
     
     
     /* Eliminar producto de inventario LISTOOO*/
-    @DeleteMapping("/v2/borrarProducto")
+    @DeleteMapping("/borrarProducto")
     @Operation(summary = "Eliminar producto", description = "Elimina un producto del inventario de Perfulandia según su ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Producto eliminado correctamente"),
